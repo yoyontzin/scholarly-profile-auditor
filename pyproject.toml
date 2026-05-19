@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scholarly-profile-auditor"
+version = "0.2.0"
+description = "Auditoría bibliográfica reproducible con identidad autoral verificada y widget HTML embebible."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "Rogelio Pérez-Buendía", email = "rogelio.perez@cimat.mx" }
+]
+dependencies = [
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.27",
+  "pydantic>=2.6",
+  "pydantic-settings>=2.2",
+  "httpx>=0.27",
+  "aiolimiter>=1.1",
+  "tenacity>=8.2",
+  "typer>=0.12",
+  "rich>=13.7",
+  "duckdb>=0.10",
+  "jinja2>=3.1",
+  "pyyaml>=6.0",
+  "bibtexparser>=1.4",          # parser BibTeX
+  "rispy>=0.9",                  # parser RIS
+  "python-multipart>=0.0.9",     # FastAPI uploads
+  "rapidfuzz>=3.6",              # comparación de títulos
+  "Unidecode>=1.3",
+  "arxiv>=2.1",
+  "scholarly>=1.7",              # opcional: Google Scholar
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-asyncio>=0.23",
+  "pytest-mock>=3.12",
+  "respx>=0.20",                 # mocks de httpx
+  "mypy>=1.8",
+  "ruff>=0.3",
+]
+
+[project.scripts]
+spa = "app.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

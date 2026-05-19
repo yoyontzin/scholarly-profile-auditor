@@ -1,0 +1,337 @@
+{
+  "generated_at": "2026-05-11T18:53:42.970262Z",
+  "author": {
+    "orcid": "0000-0002-1825-0097",
+    "display_name": "Rogelio Pérez-Buendía",
+    "affiliations": [
+      "CIMAT"
+    ],
+    "aliases": []
+  },
+  "counts": {
+    "total": 6,
+    "confirmed": 4,
+    "ambiguous": 1,
+    "rejected": 1
+  },
+  "metrics": {
+    "by_source": {
+      "openalex": 16,
+      "google_scholar": 25
+    },
+    "h_index_by_source": {
+      "openalex": 2,
+      "google_scholar": 1
+    },
+    "coverage": {
+      "n_works_considered": 4.0,
+      "pct_with_doi": 75.0,
+      "pct_with_orcid_source": 75.0,
+      "pct_with_openalex_source": 0.0,
+      "pct_only_scholar": 0.0
+    },
+    "notes": []
+  },
+  "production_by_year": {
+    "2022": 1,
+    "2023": 1,
+    "2024": 2
+  },
+  "production_by_type": {
+    "journal_article": 3,
+    "software": 1
+  },
+  "snii_summary": {
+    "area_used": "fisico_matematicas",
+    "area_description": "Área de Físico-Matemáticas y Ciencias de la Tierra. Lectura cualitativa pondera más que el conteo bruto.\n",
+    "produced_per_type": {
+      "arbitrated_articles_and_conference_papers": 3,
+      "book_chapters": 0,
+      "books_and_edited_books": 0,
+      "preprints": 0,
+      "software": 1,
+      "datasets": 0,
+      "ambiguous_awaiting_review": 1
+    },
+    "citations_by_source": {
+      "openalex": 16,
+      "google_scholar": 25
+    },
+    "h_index_by_source": {
+      "openalex": 2,
+      "google_scholar": 1
+    },
+    "consolidation_policies": {
+      "report_per_source_only": "Recomendada. Cada fuente se reporta por separado.",
+      "max_per_work": {
+        "description": "Toma el máximo de citas entre fuentes para cada obra; evita doble conteo pero puede inflar respecto a fuentes arbitradas.",
+        "value": 29
+      }
+    },
+    "coverage": {
+      "n_works_considered": 4.0,
+      "pct_with_doi": 75.0,
+      "pct_with_orcid_source": 75.0,
+      "pct_with_openalex_source": 0.0,
+      "pct_only_scholar": 0.0
+    },
+    "reference_thresholds_loaded": {
+      "candidate_min_arbitrated_articles": 3,
+      "level_I_min_arbitrated_articles": 6,
+      "level_II_min_arbitrated_articles": 12,
+      "level_III_min_arbitrated_articles": 20
+    },
+    "citation_notes_for_area": [
+      "Las citas en matemáticas suelen acumularse lentamente; horizonte ≥ 5 años.",
+      "Coautoría reducida; cada artículo arbitrado pesa más por sí mismo.",
+      "Indexación variable: arXiv y MathSciNet importan, Scholar sobreestima."
+    ],
+    "warnings": [
+      "Las citas de Google Scholar incluyen repositorios sin arbitraje y a veces auto-citas; no son comparables 1:1 con OpenAlex/Crossref.",
+      "El conteo de Google Scholar incluye repositorios sin arbitraje; descontar antes de comparar.",
+      "El h-index varía por fuente; no es comparable entre OpenAlex y Scholar.",
+      "Producción cualitativa (impacto, novedad, formación de RH) no es capturable por estos umbrales."
+    ],
+    "emit_automatic_level": false,
+    "automatic_level": null,
+    "disclaimer": "Este resumen NO emite un dictamen de nivel SNII. Es una lectura cuantitativa auditable de la producción y las citas por fuente, pensada para acompañar la evaluación cualitativa que es responsabilidad del comité revisor."
+  },
+  "confirmed_works": [
+    {
+      "internal_id": "a7a07fd9-2eff-4a44-8c14-7f3eb9e0d978",
+      "title": "p-adic Galois representations",
+      "year": 2022,
+      "doi": "10.1/a",
+      "arxiv_id": null,
+      "isbn": null,
+      "venue": null,
+      "publisher": null,
+      "type": "journal_article",
+      "authors": [
+        "Rogelio Pérez-Buendía",
+        "M. Nopal-Coello"
+      ],
+      "coauthor_orcids": [],
+      "sources": [
+        "orcid",
+        "crossref"
+      ],
+      "source_confidence": {
+        "orcid": 0.9,
+        "crossref": 0.9
+      },
+      "citations_by_source": [
+        {
+          "source": "openalex",
+          "count": 12,
+          "queried_at": "2026-05-11T18:53:42.944367"
+        },
+        {
+          "source": "google_scholar",
+          "count": 25,
+          "queried_at": "2026-05-11T18:53:42.944369"
+        }
+      ],
+      "url_best": "https://doi.org/10.1/a",
+      "verification": {
+        "status": "confirmed",
+        "score": 1.2,
+        "signals": {},
+        "reasons": [
+          "test"
+        ],
+        "requires_review": false
+      },
+      "user_supplied": false
+    },
+    {
+      "internal_id": "f5614065-0f0d-4906-81b1-e78e1d44e21a",
+      "title": "Berkovich dynamics",
+      "year": 2023,
+      "doi": null,
+      "arxiv_id": "2401.00001",
+      "isbn": null,
+      "venue": null,
+      "publisher": null,
+      "type": "journal_article",
+      "authors": [
+        "Rogelio Pérez-Buendía",
+        "M. Nopal-Coello"
+      ],
+      "coauthor_orcids": [],
+      "sources": [
+        "orcid",
+        "arxiv"
+      ],
+      "source_confidence": {
+        "orcid": 0.9,
+        "arxiv": 0.9
+      },
+      "citations_by_source": [
+        {
+          "source": "openalex",
+          "count": 3,
+          "queried_at": "2026-05-11T18:53:42.944464"
+        }
+      ],
+      "url_best": "https://arxiv.org/abs/2401.00001",
+      "verification": {
+        "status": "confirmed",
+        "score": 1.2,
+        "signals": {},
+        "reasons": [
+          "test"
+        ],
+        "requires_review": false
+      },
+      "user_supplied": false
+    },
+    {
+      "internal_id": "6989155b-98a6-4f96-9e3d-04d7ca643614",
+      "title": "A condensed approach to p-adic Hodge theory",
+      "year": 2024,
+      "doi": "10.1/b",
+      "arxiv_id": null,
+      "isbn": null,
+      "venue": null,
+      "publisher": null,
+      "type": "journal_article",
+      "authors": [
+        "Rogelio Pérez-Buendía",
+        "M. Nopal-Coello"
+      ],
+      "coauthor_orcids": [],
+      "sources": [
+        "orcid"
+      ],
+      "source_confidence": {
+        "orcid": 0.9
+      },
+      "citations_by_source": [
+        {
+          "source": "openalex",
+          "count": 1,
+          "queried_at": "2026-05-11T18:53:42.944483"
+        }
+      ],
+      "url_best": "https://doi.org/10.1/b",
+      "verification": {
+        "status": "confirmed",
+        "score": 1.2,
+        "signals": {},
+        "reasons": [
+          "test"
+        ],
+        "requires_review": false
+      },
+      "user_supplied": false
+    },
+    {
+      "internal_id": "6e1c10ab-f1b6-446a-9dae-ef0417f675be",
+      "title": "Software: p-adic GRN simulator",
+      "year": 2024,
+      "doi": "10.5281/zenodo.x",
+      "arxiv_id": null,
+      "isbn": null,
+      "venue": null,
+      "publisher": null,
+      "type": "software",
+      "authors": [
+        "Rogelio Pérez-Buendía",
+        "M. Nopal-Coello"
+      ],
+      "coauthor_orcids": [],
+      "sources": [
+        "datacite"
+      ],
+      "source_confidence": {
+        "datacite": 0.9
+      },
+      "citations_by_source": [],
+      "url_best": "https://doi.org/10.5281/zenodo.x",
+      "verification": {
+        "status": "confirmed",
+        "score": 1.2,
+        "signals": {},
+        "reasons": [
+          "test"
+        ],
+        "requires_review": false
+      },
+      "user_supplied": false
+    }
+  ],
+  "ambiguous_works": [
+    {
+      "internal_id": "8843729a-6605-41d2-99e3-755fb06843bd",
+      "title": "Unidentifiable paper",
+      "year": 2024,
+      "doi": null,
+      "arxiv_id": null,
+      "isbn": null,
+      "venue": null,
+      "publisher": null,
+      "type": "journal_article",
+      "authors": [
+        "Rogelio Pérez-Buendía",
+        "M. Nopal-Coello"
+      ],
+      "coauthor_orcids": [],
+      "sources": [
+        "google_scholar"
+      ],
+      "source_confidence": {
+        "google_scholar": 0.9
+      },
+      "citations_by_source": [],
+      "url_best": null,
+      "verification": {
+        "status": "ambiguous",
+        "score": 0.5,
+        "signals": {},
+        "reasons": [
+          "test"
+        ],
+        "requires_review": false
+      },
+      "user_supplied": false
+    }
+  ],
+  "rejected_works": [
+    {
+      "internal_id": "196f7779-3cbe-4450-8a1a-f2d410f38c5e",
+      "title": "Not mine",
+      "year": 2024,
+      "doi": "10.9/x",
+      "arxiv_id": null,
+      "isbn": null,
+      "venue": null,
+      "publisher": null,
+      "type": "journal_article",
+      "authors": [
+        "Rogelio Pérez-Buendía",
+        "M. Nopal-Coello"
+      ],
+      "coauthor_orcids": [],
+      "sources": [
+        "openalex"
+      ],
+      "source_confidence": {
+        "openalex": 0.9
+      },
+      "citations_by_source": [],
+      "url_best": "https://doi.org/10.9/x",
+      "verification": {
+        "status": "rejected",
+        "score": 0.5,
+        "signals": {},
+        "reasons": [
+          "test"
+        ],
+        "requires_review": false
+      },
+      "user_supplied": false
+    }
+  ],
+  "conflicts": []
+}

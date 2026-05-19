@@ -1,0 +1,43 @@
+{
+  "title": "Scholarly Profile Auditor: bibliographic audit with SNII Cita A/B classification",
+  "description": "<p>Local-first software for reproducible bibliographic auditing of researcher profiles. Integrates ORCID, OpenAlex, Crossref, DataCite, arXiv and Semantic Scholar through a guided three-step workflow:</p><ol><li><strong>Author identification</strong> — accepts ORCID, Google Scholar URL, or full name (with multi-source candidate search and human-in-the-loop confirmation).</li><li><strong>Publication confirmation</strong> — exhaustive search across certified databases with deduplication and per-source confidence score; the user marks which works are theirs.</li><li><strong>Citation analysis</strong> — classifies each citing paper as <em>Cita A</em> (strictly external, no author of the cited work appears in the citer) or <em>Cita B</em> (excludes only the evaluated researcher's self-citations), following the official criteria of Mexico's Sistema Nacional de Investigadoras e Investigadores (SNII), Area I (Physico-Mathematics and Earth Sciences).</li></ol><p>Includes a standalone HTML widget that runs entirely in the browser (no backend required) and is embeddable in personal academic pages.</p><p><strong>Important:</strong> the system never emits an automatic SNII level. It is a documentation tool; qualitative evaluation remains the committee's responsibility.</p>",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Pérez-Buendía, Rogelio",
+      "affiliation": "Centro de Investigación en Matemáticas (CIMAT)",
+      "orcid": "0000-0002-7739-4779"
+    }
+  ],
+  "keywords": [
+    "bibliometrics",
+    "scholarly communication",
+    "ORCID",
+    "OpenAlex",
+    "Semantic Scholar",
+    "SNII",
+    "SECIHTI",
+    "citation analysis",
+    "self-citation",
+    "reproducibility",
+    "Cita A",
+    "Cita B",
+    "Mexico",
+    "researcher evaluation"
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "language": "spa",
+  "communities": [
+    {"identifier": "openscience"}
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://portal.amelica.org/ameli/static/media/observatorio/Criterios%20Area%20I-FF.pdf",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-other",
+      "scheme": "url"
+    }
+  ],
+  "notes": "This software does not emit automatic SNII level classifications. It applies the official Cita A and Cita B definitions from SECIHTI Area I criteria, computed from public APIs (OpenAlex, Semantic Scholar). Self-citation logic uses author identity matching by ORCID and normalized name comparison (with Unicode LaTeX-apostrophe handling)."
+}

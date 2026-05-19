@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: ruff check app tests || true
+
+      - name: Run tests
+        run: PYTHONPATH=. pytest -q
+
+  widget-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check widget JavaScript syntax
+        run: |
+          python3 - <<'PY'
+          import re, pathlib
+          html = pathlib.Path("widget/standalone.html").read_text(encoding="utf-8")
+          m = re.search(r"<script>(.*?)</script>", html, re.DOTALL)
+          pathlib.Path("/tmp/widget.js").write_text(m.group(1))
+          PY
+          node --check /tmp/widget.js

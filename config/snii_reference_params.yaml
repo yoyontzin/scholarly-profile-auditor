@@ -1,0 +1,79 @@
+# Parámetros de referencia por área para el modo SNII-style.
+#
+# IMPORTANTE: Estos valores NO son criterios oficiales. Son anclas
+# configurables por el usuario. Si no están cargados o son obsoletos,
+# el reporte lo declara explícitamente y no emite dictamen automático.
+#
+# Última revisión por el usuario: aún no fijada.
+# Fuente: por completar con documento vigente SECIHTI/SNII del área.
+
+# Umbrales de citas por nivel, extraídos de los Criterios Específicos de
+# Evaluación SECIHTI por área. count_basis indica si el umbral oficial se
+# mide sobre Cita A (excluye autocitas de todos los coautores) o no se precisa.
+#
+# IMPORTANTE: el sistema NUNCA emite un nivel automático. Estos umbrales son
+# para reportar "cumple / faltan N", no para dictaminar.
+
+areas:
+  area1_matematicas:
+    label: "Área I — Matemáticas"
+    count_basis: "A"
+    thresholds: { nivel_ii: 20, nivel_iii: 40, h_ii: null, h_iii: null }
+    citation_notes:
+      - "Matemáticas: ≥20 citas (Nivel II), ≥40 (Nivel III), excluyendo autocitas de todos los autores (Cita A)."
+      - "Las citas en matemáticas se acumulan lentamente; horizonte ≥ 5 años."
+      - "MathSciNet y zbMATH no son fuentes abiertas; OpenAlex sub-reporta."
+    source: "https://portal.amelica.org/ameli/static/media/observatorio/Criterios%20Area%20I-FF.pdf"
+
+  area1_fisica:
+    label: "Área I — Física"
+    count_basis: "A"
+    thresholds: { nivel_ii: null, nivel_iii: 500, h_ii: null, h_iii: 15 }
+    citation_notes:
+      - "Física: Nivel III pide ≥500 citas e índice h≥15 (productos de los últimos 15 años)."
+    source: "https://portal.amelica.org/ameli/static/media/observatorio/Criterios%20Area%20I-FF.pdf"
+
+  area1_astronomia:
+    label: "Área I — Astronomía"
+    count_basis: "A"
+    thresholds: { nivel_ii: null, nivel_iii: 800, h_ii: null, h_iii: 25 }
+    citation_notes:
+      - "Astronomía: Nivel III pide ≥800 citas e índice h≥25."
+    source: "https://portal.amelica.org/ameli/static/media/observatorio/Criterios%20Area%20I-FF.pdf"
+
+  area1_tierra:
+    label: "Área I — Ciencias de la Tierra"
+    count_basis: "A"
+    thresholds: { nivel_ii: null, nivel_iii: 400, h_ii: null, h_iii: 10 }
+    citation_notes:
+      - "Ciencias de la Tierra: Nivel III pide ≥400 citas e índice h≥10."
+    source: "https://portal.amelica.org/ameli/static/media/observatorio/Criterios%20Area%20I-FF.pdf"
+
+  area2:
+    label: "Área II — Biología y Química"
+    count_basis: "A"
+    thresholds: { nivel_ii: 200, nivel_iii: 400, h_ii: null, h_iii: null }
+    citation_notes:
+      - "Biología y Química: Nivel II ≥200 citas Scopus, Nivel III ≥400, EXCLUYENDO autocitas de todos los coautores (Cita A)."
+      - "Producto válido: artículo JCR con FI≥0.5 o Q1/Q2 SCIMAGO."
+    source: "https://portal.amelica.org/ameli/static/media/observatorio/Criterios%20Area%20II-FF.pdf"
+
+  area3:
+    label: "Área III — Medicina y Ciencias de la Salud"
+    count_basis: "any"
+    thresholds: { nivel_ii: 150, nivel_iii: 400, h_ii: 5, h_iii: 10 }
+    citation_notes:
+      - "Medicina y Salud: Nivel II >150 citas e índice h=5; Nivel III >400 citas e índice h=10."
+    source: "https://portal.amelica.org/ameli/static/media/observatorio/Criterios%20Area%20III-FF.pdf"
+
+  none:
+    label: "Sin área"
+    count_basis: "any"
+    thresholds: { nivel_ii: null, nivel_iii: null, h_ii: null, h_iii: null }
+    citation_notes:
+      - "Sin umbrales preconfigurados: solo se reporta el conteo Cita A / Cita B."
+
+defaults:
+  area_if_unspecified: area1_matematicas
+  emit_automatic_level: false   # NUNCA emitir un nivel automáticamente
+  consolidation_policy: "report_per_source_only"

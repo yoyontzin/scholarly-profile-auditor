@@ -1,0 +1,1 @@
+"""Servicios: pipeline, ingestión, persistencia."""

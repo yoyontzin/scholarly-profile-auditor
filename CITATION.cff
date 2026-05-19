@@ -1,0 +1,47 @@
+# Citation File Format (CFF) — describe cómo citar este software.
+# https://citation-file-format.github.io/
+cff-version: 1.2.0
+message: "Si usas este software en tu investigación, por favor cítalo."
+title: "Scholarly Profile Auditor: bibliographic audit with SNII Cita A/B classification"
+abstract: >-
+  Local-first software for reproducible bibliographic auditing of researcher
+  profiles. Integrates ORCID, OpenAlex, Crossref, DataCite, arXiv and Semantic
+  Scholar through a guided three-step workflow (author identification,
+  publication confirmation, citation analysis). Classifies citations as Cita A
+  (strictly external) or Cita B (excludes only the evaluated author's
+  self-citations) following the official criteria of Mexico's Sistema Nacional
+  de Investigadoras e Investigadores (SNII), Area I.
+type: software
+authors:
+  - given-names: "Rogelio"
+    family-names: "Pérez-Buendía"
+    affiliation: "Centro de Investigación en Matemáticas (CIMAT)"
+    orcid: "https://orcid.org/0000-0002-7739-4779"
+license: MIT
+repository-code: "https://github.com/yoyontzin/scholarly-profile-auditor"
+version: "0.2.0"
+date-released: "2026-05-15"
+keywords:
+  - bibliometrics
+  - scholarly-communication
+  - ORCID
+  - OpenAlex
+  - Semantic-Scholar
+  - SNII
+  - SECIHTI
+  - citation-analysis
+  - self-citation
+  - reproducibility
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.PLACEHOLDER
+    description: "Zenodo concept DOI (replace upon release)."
+preferred-citation:
+  type: software
+  title: "Scholarly Profile Auditor"
+  authors:
+    - given-names: "Rogelio"
+      family-names: "Pérez-Buendía"
+      orcid: "https://orcid.org/0000-0002-7739-4779"
+  year: 2026
+  url: "https://github.com/yoyontzin/scholarly-profile-auditor"

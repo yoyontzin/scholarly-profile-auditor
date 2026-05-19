@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Reporte bibliográfico — {{ author.display_name }}</title>
+<style>
+  :root {
+    --fg: #1a1a1a; --bg: #fafafa; --muted: #666; --accent: #2c5aa0;
+    --ok: #2d8659; --warn: #c8861d; --bad: #b03030; --ambig: #6a5b8e;
+    --border: #d6d6d6;
+    --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+         color: var(--fg); background: var(--bg); margin: 0 auto; max-width: 1000px;
+         padding: 2rem; line-height: 1.55; }
+  h1, h2, h3 { color: var(--accent); }
+  h1 { border-bottom: 2px solid var(--accent); padding-bottom: 0.4rem; }
+  h2 { margin-top: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+  .meta { color: var(--muted); font-size: 0.95em; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  th, td { border: 1px solid var(--border); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+  th { background: #eee; }
+  code, .mono { font-family: var(--mono); font-size: 0.92em; }
+  .badge { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 0.78em;
+           font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .badge.ok { background: var(--ok); color: white; }
+  .badge.warn { background: var(--warn); color: white; }
+  .badge.bad { background: var(--bad); color: white; }
+  .badge.ambig { background: var(--ambig); color: white; }
+  .badge.src { background: #ddd; color: #333; margin-right: 4px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .callout { background: #fff8e0; border-left: 4px solid var(--warn);
+             padding: 0.6rem 1rem; margin: 0.8rem 0; border-radius: 0 4px 4px 0; }
+  .callout.info { background: #eaf3fb; border-color: var(--accent); }
+  .callout.danger { background: #fde8e8; border-color: var(--bad); }
+  .reasons { color: var(--muted); font-size: 0.92em; }
+  .reasons li { margin: 0; }
+  details summary { cursor: pointer; color: var(--accent); }
+  .source-tag { font-size: 0.85em; color: var(--muted); }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border);
+           color: var(--muted); font-size: 0.88em; }
+</style>
+</head>
+<body>
+
+<h1>Reporte bibliográfico</h1>
+<p class="meta">
+  <strong>{{ author.display_name }}</strong> ·
+  ORCID <code>{{ author.orcid }}</code> ·
+  generado el {{ generated_at }}
+</p>
+
+<h2>Metodología</h2>
+<p>Este reporte fue generado por <code>scholarly-profile-auditor</code> aplicando
+la siguiente jerarquía de confianza para resolver identidad y metadatos de obras:
+ORCID &gt; Crossref/DataCite/arXiv &gt; OpenAlex &gt; Zenodo/GitHub &gt; Google Scholar
+(este último, solo como cotejo).</p>
+
+<p>Una obra solo se clasifica como <strong>confirmada</strong> si cumple al menos
+uno de: (i) ORCID del autor explícito en sus metadatos, o (ii) identificador
+estable (DOI/arXiv/ISBN) con score multi-señal suficiente. En caso contrario,
+queda como <em>ambigua</em> y requiere revisión manual.</p>
+
+<h2>Resumen del perfil</h2>
+<table>
+  <tr><th>Total obras analizadas</th><td>{{ works|length }}</td></tr>
+  <tr><th>Confirmadas</th><td><span class="badge ok">{{ confirmed|length }}</span></td></tr>
+  <tr><th>Ambiguas (requieren revisión)</th><td><span class="badge ambig">{{ ambiguous|length }}</span></td></tr>
+  <tr><th>Rechazadas</th><td><span class="badge bad">{{ rejected|length }}</span></td></tr>
+  <tr><th>Conflictos entre fuentes</th><td>{{ conflicts|length }}</td></tr>
+</table>
+
+<h2>Métricas por fuente</h2>
+<p class="meta">
+Las métricas se reportan por fuente <strong>sin sumar entre ellas</strong>.
+Cualquier consolidación requiere una política declarada (ver sección SNII-style).
+</p>
+<table>
+  <thead><tr><th>Fuente</th><th>Citas totales</th><th>h-index</th><th>i10-index</th></tr></thead>
+  <tbody>
+  {% for src, count in metrics.by_source.items() %}
+    <tr>
+      <td>{{ src.value }}</td>
+      <td>{{ count }}</td>
+      <td>{{ metrics.h_index_by_source.get(src, '—') }}</td>
+      <td>{{ metrics.i10_index_by_source.get(src, '—') }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% if metrics.notes %}
+  {% for note in metrics.notes %}
+    <div class="callout">{{ note }}</div>
+  {% endfor %}
+{% endif %}
+
+<h2>Cobertura</h2>
+<table>
+  {% for k, v in metrics.coverage.items() %}
+    <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
+  {% endfor %}
+</table>
+
+<h2>Producción por año (obras confirmadas)</h2>
+<table>
+  <thead><tr><th>Año</th><th>Obras</th></tr></thead>
+  <tbody>
+  {% for y, n in production_by_year.items() %}
+    <tr><td>{{ y }}</td><td>{{ n }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Producción por tipo</h2>
+<table>
+  <thead><tr><th>Tipo</th><th>Cantidad</th></tr></thead>
+  <tbody>
+  {% for t, n in production_by_type.items() %}
+    <tr><td>{{ t }}</td><td>{{ n }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Resumen SNII-style</h2>
+<div class="callout info">
+  <strong>Disclaimer.</strong> {{ snii.disclaimer }}
+</div>
+<p>Área usada: <code>{{ snii.area_used }}</code>. {{ snii.area_description }}</p>
+<h3>Producción</h3>
+<table>
+  {% for k, v in snii.produced_per_type.items() %}
+    <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
+  {% endfor %}
+</table>
+
+<h3>Citas por fuente</h3>
+<table>
+  {% for src, v in snii.citations_by_source.items() %}
+    <tr><th>{{ src }}</th><td>{{ v }} (h-index: {{ snii.h_index_by_source.get(src, '—') }})</td></tr>
+  {% endfor %}
+</table>
+
+<h3>Políticas de consolidación</h3>
+<p><code>report_per_source_only</code> — {{ snii.consolidation_policies.report_per_source_only }}</p>
+<p><code>max_per_work</code> — {{ snii.consolidation_policies.max_per_work.description }}
+  &nbsp;<strong>valor: {{ snii.consolidation_policies.max_per_work.value }}</strong></p>
+
+{% if snii.reference_thresholds_loaded %}
+<h3>Umbrales de referencia (cargados desde archivo)</h3>
+<table>
+  {% for k, v in snii.reference_thresholds_loaded.items() %}
+    <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
+  {% endfor %}
+</table>
+{% else %}
+<div class="callout danger">
+  No hay umbrales de referencia cargados para el área. Edite
+  <code>config/snii_reference_params.yaml</code> con los criterios oficiales
+  vigentes para incorporarlos al reporte.
+</div>
+{% endif %}
+
+{% if snii.citation_notes_for_area %}
+<h3>Notas para el área</h3>
+<ul>
+{% for n in snii.citation_notes_for_area %}<li>{{ n }}</li>{% endfor %}
+</ul>
+{% endif %}
+
+{% if snii.warnings %}
+<h3>Advertencias</h3>
+<ul>
+{% for w in snii.warnings %}<li>⚠ {{ w }}</li>{% endfor %}
+</ul>
+{% endif %}
+
+<h2>Obras confirmadas ({{ confirmed|length }})</h2>
+<table>
+  <thead><tr><th>Año</th><th>Título</th><th>Fuentes</th><th>Citas</th></tr></thead>
+  <tbody>
+  {% for w in confirmed %}
+    <tr>
+      <td>{{ w.year or '—' }}</td>
+      <td>
+        <strong>{{ w.title }}</strong>
+        {% if w.doi %}<br><span class="source-tag">doi: <a href="https://doi.org/{{ w.doi }}">{{ w.doi }}</a></span>{% endif %}
+        {% if w.arxiv_id %}<br><span class="source-tag">arxiv: <a href="https://arxiv.org/abs/{{ w.arxiv_id }}">{{ w.arxiv_id }}</a></span>{% endif %}
+        {% if w.venue %}<br><span class="source-tag">{{ w.venue }}</span>{% endif %}
+      </td>
+      <td>
+        {% for s in w.source_list|map(attribute='source')|unique %}
+          <span class="badge src">{{ s.value }}</span>
+        {% endfor %}
+      </td>
+      <td>
+        {% for c in w.citation_counts_by_source %}
+          {{ c.source.value }}: {{ c.count }}<br>
+        {% endfor %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Obras ambiguas — requieren revisión ({{ ambiguous|length }})</h2>
+{% for w in ambiguous %}
+<details>
+  <summary><strong>{{ w.title }}</strong> ({{ w.year or '—' }}) — score {{ '%.2f'|format(w.verification.score) }}</summary>
+  <ul class="reasons">
+    {% for r in w.verification.reasons %}<li>{{ r }}</li>{% endfor %}
+  </ul>
+  <p>
+    Fuentes:
+    {% for s in w.source_list|map(attribute='source')|unique %}
+      <span class="badge src">{{ s.value }}</span>
+    {% endfor %}
+  </p>
+</details>
+{% endfor %}
+
+<h2>Conflictos entre fuentes ({{ conflicts|length }})</h2>
+{% for c in conflicts %}
+<details>
+  <summary><strong>{{ c.field }}</strong> — {{ c.severity }} — {{ c.notes }}</summary>
+  <table>
+    {% for src, val in c.values.items() %}
+      <tr><th>{{ src.value }}</th><td>{{ val }}</td></tr>
+    {% endfor %}
+  </table>
+</details>
+{% endfor %}
+
+<h2>Bitácora del pipeline</h2>
+<ul class="reasons">
+{% for e in stage_log %}<li>{{ e }}</li>{% endfor %}
+</ul>
+
+<footer>
+  Generado por <code>scholarly-profile-auditor</code> v0.1 — local-first, reproducible.
+  Las fuentes externas consultadas se identifican mediante User-Agent con email del usuario.
+</footer>
+
+</body>
+</html>

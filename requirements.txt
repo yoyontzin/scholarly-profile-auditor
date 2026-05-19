@@ -1,0 +1,20 @@
+# Mirror de pyproject.toml para entornos que no usan PEP 621.
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.6
+pydantic-settings>=2.2
+httpx>=0.27
+aiolimiter>=1.1
+tenacity>=8.2
+typer>=0.12
+rich>=13.7
+duckdb>=0.10
+jinja2>=3.1
+pyyaml>=6.0
+bibtexparser>=1.4
+rispy>=0.9
+python-multipart>=0.0.9
+rapidfuzz>=3.6
+Unidecode>=1.3
+arxiv>=2.1
+scholarly>=1.7

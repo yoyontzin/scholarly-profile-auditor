@@ -1,0 +1,52 @@
+# Configuración del pipeline. Editable sin tocar código.
+
+http:
+  timeout_seconds: 20
+  retries: 3
+  backoff_initial: 0.5
+  backoff_max: 8.0
+
+rate_limits:
+  # requests por segundo por dominio
+  api.crossref.org: 50.0
+  api.openalex.org: 10.0
+  api.datacite.org: 10.0
+  pub.orcid.org: 8.0
+  export.arxiv.org: 1.0     # arXiv: ser conservador
+  scholar.google.com: 0.2   # extremadamente conservador
+
+scoring:
+  # Pesos para el scoring de autoría. Un score >= confirm_threshold
+  # promueve la obra a "confirmed" si además existe un identificador
+  # estable (DOI/arXiv) o ORCID explícito en la obra.
+  weights:
+    orcid_explicit: 1.0     # ORCID del autor presente en la obra
+    doi_resolvable: 0.25
+    arxiv_resolvable: 0.20
+    name_exact: 0.20
+    name_normalized: 0.10
+    coauthor_known: 0.20
+    affiliation_match: 0.15
+    title_in_user_file: 0.25
+    second_source_confirms: 0.15
+    venue_compatible: 0.05
+    year_window_ok: 0.05
+  confirm_threshold: 0.65
+  ambiguous_threshold: 0.40   # entre ambiguous y reject
+  # Política dura: sin DOI/arXiv/ORCID explícito, máximo "ambiguous".
+  require_stable_id_for_confirm: true
+
+dedupe:
+  title_similarity_threshold: 92   # rapidfuzz token_set_ratio
+  year_tolerance: 1
+
+scholar:
+  enabled: true
+  # Modo conservador: solo lecturas espaciadas, sin proxies, sin crawl.
+  conservative: true
+  # Marcar todo lo importado de Scholar con un flag explícito.
+  mark_source_only: true
+
+reports:
+  include_audit_log: true
+  embed_widget_in_report: false   # mantenerlos como artefactos separados
