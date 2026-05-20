@@ -74,11 +74,12 @@ y reglas duras.
 | `app/metrics/snii_citations.py` | **Análisis Cita A / Cita B con definiciones oficiales SNII Área I.** |
 | `app/metrics/coauthor.py` | Grafo de coautoría con nodos ponderados. |
 | `app/services/pipeline.py` | Orquesta etapas 1–10, devuelve `PipelineResult`. |
-| `app/services/exports.py` | Genera los 6 artefactos. |
+| `app/services/exports.py` | Genera los 6 artefactos (flujo CLI completo). |
+| `app/services/from_widget.py` | **Conexión widget → CLI**: convierte el JSON exportado por el widget en report.html / .bib / audit_log.md / report.json. |
 | `app/api/routes.py` | FastAPI: `POST /api/audit` y servir `widget/`. |
 | `app/cli.py` | Typer: `spa audit`, `spa serve`, `spa config-show`. |
 | `app/main.py` | Punto de entrada FastAPI. |
-| `widget/standalone.html` | App de 3 pasos full-browser, sin backend. |
+| `widget/perfil-academico-snii.html` | App de 3 pasos full-browser, sin backend. |
 
 ## Reglas duras (políticas del proyecto)
 
@@ -145,7 +146,7 @@ recibe.
 
 ### 5. Widget sin backend
 
-`widget/standalone.html` corre sin servidor llamando a APIs públicas
+`widget/perfil-academico-snii.html` corre sin servidor llamando a APIs públicas
 directamente vía CORS. Esto:
 
 - Elimina la fricción de instalación para el usuario final.
@@ -213,7 +214,7 @@ scholarly-profile-auditor/
 ├── tests/                  pytest suite
 ├── widget/
 │   ├── index.html          (con backend FastAPI)
-│   ├── standalone.html     (sin backend, 3 pasos)
+│   ├── perfil-academico-snii.html     (sin backend, 3 pasos)
 │   └── app.js
 ├── .env.example
 ├── .gitignore

@@ -13,8 +13,7 @@
 </style>
 </head>
 <body>
-  <p>Redirigiendo al applet…<br>
-     Si no avanza, abre <a href="perfil-academico-snii.html">perfil-academico-snii.html</a>.</p>
+  <p>Este archivo se renombró a <a href="perfil-academico-snii.html">perfil-academico-snii.html</a>. Redirigiendo…</p>
   <script>location.replace("perfil-academico-snii.html");</script>
 </body>
 </html>

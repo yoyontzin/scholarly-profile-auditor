@@ -6,6 +6,15 @@ Formato: [Keep a Changelog](https://keepachangelog.com/), versionado [SemVer](ht
 ## [0.3.0] — 2026-05-19
 
 ### Added
+- **Conexión widget → CLI** (`spa from-json archivo.json`): el JSON exportado
+  por el widget se convierte en los artefactos formales (`report.html`,
+  `canonical_works.bib`, `audit_log.md`, `report.json`) con el motor Python
+  testeado. Nuevo módulo `app/services/from_widget.py` + 8 tests.
+- **Reporte HTML formal y bitácora descargables desde el propio widget**
+  (botones "Descargar reporte HTML" / "Descargar bitácora .md"): documento
+  imprimible para el expediente sin necesidad de Python.
+- Applet renombrado a `widget/perfil-academico-snii.html` (canónico);
+  `index.html` y `standalone.html` redirigen a él.
 - **Reporte unificado en el widget.** El Paso 3 ahora muestra, junto al
   análisis Cita A/B, una tabla de **producción por tipo de producto**
   (artículos arbitrados y memorias, capítulos, libros, preprints, software,

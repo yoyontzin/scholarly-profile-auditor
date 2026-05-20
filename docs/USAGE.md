@@ -11,8 +11,8 @@ una página académica personal.
 
 ```bash
 # Abre el archivo directamente con tu navegador
-open widget/standalone.html
-# o equivalente en Linux: xdg-open widget/standalone.html
+open widget/perfil-academico-snii.html
+# o equivalente en Linux: xdg-open widget/perfil-academico-snii.html
 ```
 
 No necesitas servidor ni instalar nada. Todo el procesamiento ocurre en tu
@@ -21,12 +21,12 @@ arXiv, Crossref) mediante CORS.
 
 ### Cómo embeberlo en tu página académica
 
-Sube `widget/standalone.html` a tu sitio (puede ser un repo de GitHub Pages
+Sube `widget/perfil-academico-snii.html` a tu sitio (puede ser un repo de GitHub Pages
 o tu hosting institucional). Embebe en cualquier página con:
 
 ```html
 <iframe
-  src="/scholarly-profile-auditor/standalone.html?orcid=0000-0002-7739-4779"
+  src="/scholarly-profile-auditor/perfil-academico-snii.html?orcid=0000-0002-7739-4779"
   width="100%" height="1200" style="border:none; border-radius:6px;"
   title="Mi auditoría bibliográfica">
 </iframe>
@@ -128,6 +128,33 @@ report.json                 # mismo contenido en JSON
 audit_log.md                # bitácora + decisiones por obra
 widget/data.json            # alimenta el widget si lo embebes
 ```
+
+---
+
+## Opción 2.5 — Widget + CLI (lo mejor de ambos)
+
+El flujo recomendado para el expediente: haz el análisis en el **widget**
+(identificación con checklist, confirmación de obras, Cita A/B), pulsa
+**"Descargar JSON"**, y conviértelo en los documentos formales con el CLI:
+
+```bash
+spa from-json ~/Downloads/spa-0000-0002-7739-4779.json --out ./out
+```
+
+Genera en `./out/spa-.../`:
+
+```
+report.html            # reporte formal imprimible (PDF) para el expediente
+canonical_works.bib    # BibTeX con conteo Cita A/B por obra en la nota
+audit_log.md           # bitácora con la decisión de cada cita
+report.json            # JSON normalizado
+```
+
+Así el análisis lo hace el navegador (que sí puede consultar las APIs sin
+límites de CORS server-side y con tu intervención humana en cada paso), y el
+documento de respaldo lo produce el motor Python testeado. El **propio widget
+también** puede descargar `report.html` y `audit_log.md` directamente (botones
+"Descargar reporte HTML" / "Descargar bitácora"), sin necesitar Python.
 
 ---
 

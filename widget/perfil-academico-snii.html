@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Scholarly Profile Auditor — Cita A / Cita B (SNII)</title>
-<meta name="description" content="Auditor bibliográfico con identificación human-in-the-loop. Cita A: estrictamente externa. Cita B: sin autocita del evaluado. Definiciones oficiales SNII (México).">
+<title>Perfil Académico SNII — Auditor de citas Cita A / Cita B</title>
+<meta name="description" content="Auditor de perfil académico: identidad del investigador, producción por tipo y clasificación de citas Cita A / Cita B según criterios SNII (México). Corre en el navegador, sin backend.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Patrick+Hand&family=Shadows+Into+Light&display=swap" rel="stylesheet">
@@ -510,10 +510,14 @@
     <div id="per-work"></div>
 
     <h2>Exportar</h2>
+    <p class="small">El reporte HTML es un documento formal autocontenido (imprimible / PDF)
+       para tu expediente; la bitácora documenta la decisión de cada cita.</p>
     <div class="actions">
-      <button type="button" id="export-json">Descargar JSON</button>
-      <button type="button" id="export-bib" class="secondary">Descargar BibTeX</button>
-      <button type="button" id="copy-share" class="ghost">Copiar URL compartible</button>
+      <button type="button" id="export-report">Descargar reporte HTML</button>
+      <button type="button" id="export-audit" class="secondary">Descargar bitácora (.md)</button>
+      <button type="button" id="export-json" class="ghost">JSON</button>
+      <button type="button" id="export-bib" class="ghost">BibTeX</button>
+      <button type="button" id="copy-share" class="ghost">Copiar URL</button>
     </div>
   </div>
 </section>
@@ -1795,6 +1799,141 @@ $("#run-citation-analysis").addEventListener("click", async () => {
     alert("Error en análisis: " + e.message);
     console.error(e);
   }
+});
+
+// Descarga un Blob de texto con el nombre dado.
+function downloadText(filename, content, mime) {
+  const blob = new Blob([content], { type: mime });
+  const u = URL.createObjectURL(blob);
+  const a = el("a", { href: u, download: filename });
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 1000);
+}
+
+// ---- Reporte HTML formal autocontenido (para imprimir / PDF / expediente) ----
+function buildFormalReportHtml(data) {
+  const a = data.author || {};
+  const fullName = (a.given_names && a.family_names)
+    ? `${a.given_names} ${a.family_names}` : (a.display_name || "—");
+  const T = data.totals;
+  const area = data.snii_area || {};
+  const fecha = new Date().toLocaleString("es-MX");
+
+  const idRows = [];
+  if (a.orcid) idRows.push(`<tr><th>ORCID</th><td><a href="https://orcid.org/${esc(a.orcid)}">https://orcid.org/${esc(a.orcid)}</a></td></tr>`);
+  if (a.scholar_url) idRows.push(`<tr><th>Google Scholar</th><td><a href="${esc(a.scholar_url)}">${esc(a.scholar_url)}</a></td></tr>`);
+  if (a.openalex_id) idRows.push(`<tr><th>OpenAlex</th><td>openalex.org/${esc(a.openalex_id)}</td></tr>`);
+  (a.external_ids || []).forEach(e => idRows.push(`<tr><th>${esc(e.type)}</th><td>${esc(e.value)}</td></tr>`));
+  (a.researcher_urls || []).filter(u=>!/scholar\.google\./i.test(u.url)).forEach(u =>
+    idRows.push(`<tr><th>${esc(u.name||"Web")}</th><td><a href="${esc(u.url)}">${esc(u.url)}</a></td></tr>`));
+  if ((a.affiliations||[]).length) idRows.push(`<tr><th>Afiliaciones</th><td>${a.affiliations.slice(0,5).map(esc).join("<br>")}</td></tr>`);
+  if (a.country) idRows.push(`<tr><th>País</th><td>${esc(a.country)}</td></tr>`);
+  if ((a.keywords||[]).length) idRows.push(`<tr><th>Áreas</th><td>${a.keywords.map(esc).join(" · ")}</td></tr>`);
+
+  // Producción por tipo
+  let prodRows = "";
+  for (const [k, info] of Object.entries(data.production_by_type || {})) {
+    prodRows += `<tr><td>${esc(info.label)}</td><td>${info.obras}</td><td>${info.cita_A}</td><td>${info.cita_B}</td><td>${info.autocitas}</td></tr>`;
+  }
+  prodRows += `<tr class="tot"><td>TOTAL</td><td>${data.works.length}</td><td>${T.A}</td><td>${T.B}</td><td>${T.auto}</td></tr>`;
+
+  // Umbrales del área
+  let umbralHtml = "";
+  if (area.thresholds && (area.thresholds.nivel_ii != null || area.thresholds.nivel_iii != null)) {
+    const th = area.thresholds;
+    const cmp = (v,t)=> t==null ? "—" : (v>=t ? `${v} ✓ cumple` : `${v} ✗ faltan ${t-v}`);
+    umbralHtml = `<h2>Umbrales SNII — ${esc(area.label||"")}</h2>
+      <table><thead><tr><th>Nivel</th><th>Requisito</th><th>Por Cita A</th><th>Por Cita B</th></tr></thead><tbody>
+      <tr><td>Nivel II</td><td>${th.nivel_ii!=null?"≥ "+th.nivel_ii:"—"}</td><td>${cmp(T.A,th.nivel_ii)}</td><td>${cmp(T.B,th.nivel_ii)}</td></tr>
+      <tr><td>Nivel III</td><td>${th.nivel_iii!=null?"≥ "+th.nivel_iii:"—"}</td><td>${cmp(T.A,th.nivel_iii)}</td><td>${cmp(T.B,th.nivel_iii)}</td></tr>
+      </tbody></table>
+      <p class="note">${esc(area.note||"")}</p>`;
+  }
+
+  // Detalle por obra
+  let detalleHtml = "";
+  for (const w of [...data.works].sort((x,y)=>(y.year||0)-(x.year||0))) {
+    const citas = w.detalle && w.detalle.length
+      ? `<ul>${w.detalle.map(d=>`<li>[${d.year||"?"}] <em>${esc(d.title||"")}</em> — ${esc((d.authors||[]).join(", "))} → <strong>${d.tipo}</strong></li>`).join("")}</ul>`
+      : `<p class="note">— sin citas indexadas en OpenAlex ni Semantic Scholar —</p>`;
+    detalleHtml += `<div class="obra"><h3>[${w.year||"?"}] ${esc(w.title)}</h3>
+      <p class="note">${w.doi?`DOI: ${esc(w.doi)} · `:""}tipo: ${esc(w.type||"—")} · A=${w.cita_A} B=${w.cita_B} autocitas=${w.autocita}</p>
+      ${citas}</div>`;
+  }
+
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<title>Reporte de citas SNII — ${esc(fullName)}</title>
+<style>
+  body{font-family:Georgia,'Times New Roman',serif;color:#1a1a1a;max-width:900px;margin:2rem auto;padding:0 1.5rem;line-height:1.5}
+  h1{font-size:1.6rem;border-bottom:3px double #333;padding-bottom:.3rem}
+  h2{font-size:1.25rem;color:#2c3e50;border-bottom:1px solid #ccc;margin-top:2rem}
+  h3{font-size:1.05rem;margin:.8rem 0 .2rem}
+  table{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.95em}
+  th,td{border:1px solid #bbb;padding:.35rem .6rem;text-align:left}
+  thead th{background:#eee}
+  tr.tot{font-weight:bold;background:#f5f5f5}
+  .note{color:#666;font-size:.88em}
+  .obra{margin:.6rem 0;padding:.4rem .8rem;border-left:3px solid #ccc}
+  .disc{background:#f8f4e8;border-left:4px solid #c8861d;padding:.6rem 1rem;margin:1rem 0;font-size:.92em}
+  ul{margin:.3rem 0 .6rem 1.2rem}
+  footer{margin-top:2rem;border-top:1px solid #ccc;padding-top:.6rem;color:#666;font-size:.85em}
+  @media print{body{margin:0}}
+</style></head><body>
+<h1>Reporte de citas SNII — Cita A / Cita B</h1>
+<p><strong>${esc(fullName)}</strong><br>Generado: ${esc(fecha)}</p>
+<h2>Identidad del investigador</h2>
+<table>${idRows.join("")}</table>
+<h2>Producción por tipo de producto</h2>
+<table><thead><tr><th>Tipo</th><th>Obras</th><th>Cita A</th><th>Cita B</th><th>Autocitas</th></tr></thead><tbody>${prodRows}</tbody></table>
+<h2>Resumen de citas</h2>
+<table><tbody>
+<tr><th>Cita A (estrictamente externa)</th><td>${T.A}</td></tr>
+<tr><th>Cita B (sin el evaluado)</th><td>${T.B}</td></tr>
+<tr><th>Citas por coautor histórico (B − A)</th><td>${T.BmA}</td></tr>
+<tr><th>Autocitas estrictas</th><td>${T.auto}</td></tr>
+</tbody></table>
+${umbralHtml}
+<h2>Definiciones oficiales (SECIHTI)</h2>
+<p><strong>Cita A:</strong> el citante no incluye a ningún autor del trabajo citado (excluye autocitas de todos los autores). <strong>Cita B:</strong> el citante puede incluir coautores del trabajo pero no al investigador evaluado (excluye solo sus autocitas). Invariante: Cita A + (B−A) + autocitas = total.</p>
+<h2>Detalle por obra</h2>
+${detalleHtml}
+<div class="disc"><strong>Aviso.</strong> Este reporte NO emite un dictamen automático de nivel SNII; es una herramienta de documentación. El conteo proviene de fuentes abiertas (OpenAlex, Semantic Scholar) cuya cobertura en matemáticas es parcial. La evaluación cualitativa compete al comité.</div>
+<footer>Generado por Scholarly Profile Auditor (Dr. Jesús Rogelio Pérez Buendía) · www.cimat.mx/~rogelio.perez · licencia MIT.</footer>
+</body></html>`;
+}
+
+// ---- Bitácora de decisiones (.md) ----
+function buildAuditLogMd(data) {
+  const a = data.author || {};
+  const L = [`# Bitácora de auditoría de citas — ${a.display_name || ""}`,
+    `ORCID: ${a.orcid || "—"} · generado: ${new Date().toISOString()}`,
+    ``, `## Resumen`,
+    `- Cita A: ${data.totals.A}`, `- Cita B: ${data.totals.B}`,
+    `- B − A: ${data.totals.BmA}`, `- Autocitas: ${data.totals.auto}`,
+    `- Obras analizadas: ${data.works.length}`, ``,
+    `## Decisión por obra`, ``];
+  for (const w of [...data.works].sort((x,y)=>(y.year||0)-(x.year||0))) {
+    L.push(`### [${w.year||"?"}] ${w.title}`);
+    L.push(`- DOI: \`${w.doi||"—"}\` · tipo: ${w.type||"—"} · A=${w.cita_A} B=${w.cita_B} autocitas=${w.autocita}`);
+    for (const d of (w.detalle||[])) {
+      L.push(`  - [${d.year||"?"}] ${d.title||""} — ${(d.authors||[]).join(", ")} → **${d.tipo}**`);
+    }
+    if (!(w.detalle||[]).length) L.push(`  - (sin citas indexadas)`);
+    L.push("");
+  }
+  L.push(`---`, `Cita A = A(C) ∩ A(W) = ∅. Cita B = E ∉ A(C). Definiciones oficiales SNII Área I.`);
+  return L.join("\n");
+}
+
+$("#export-report").addEventListener("click", () => {
+  if (!STATE.citationResults) return;
+  downloadText(`reporte-snii-${STATE.candidateAuthor.orcid || "audit"}.html`,
+    buildFormalReportHtml(STATE.citationResults), "text/html");
+});
+$("#export-audit").addEventListener("click", () => {
+  if (!STATE.citationResults) return;
+  downloadText(`bitacora-snii-${STATE.candidateAuthor.orcid || "audit"}.md`,
+    buildAuditLogMd(STATE.citationResults), "text/markdown");
 });
 
 $("#export-json").addEventListener("click", () => {

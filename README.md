@@ -30,10 +30,10 @@ del SNII (México), Área I — Físico-Matemáticas.
 
 ### A) Widget en el navegador (sin instalación)
 
-Abre [`widget/standalone.html`](widget/standalone.html) en cualquier navegador moderno. Funciona enteramente client-side llamando a APIs públicas vía CORS. Embebible en tu página académica:
+Abre [`widget/perfil-academico-snii.html`](widget/perfil-academico-snii.html) en cualquier navegador moderno. Funciona enteramente client-side llamando a APIs públicas vía CORS. Embebible en tu página académica:
 
 ```html
-<iframe src="standalone.html?orcid=0000-0002-XXXX-XXXX"
+<iframe src="perfil-academico-snii.html?orcid=0000-0002-XXXX-XXXX"
         width="100%" height="1200" style="border:none"></iframe>
 ```
 

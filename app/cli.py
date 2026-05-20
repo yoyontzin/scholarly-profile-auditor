@@ -99,5 +99,31 @@ def config_show() -> None:
     console.print("[bold]snii_reference_params.yaml:[/bold]", cfg.snii_params)
 
 
+@app.command(name="from-json")
+def from_json(
+    json_file: Path = typer.Argument(..., help="JSON exportado por el widget (botón 'Descargar JSON')."),
+    out: Path = typer.Option(Path("./out"), "--out", help="Carpeta de salida."),
+) -> None:
+    """Genera los artefactos formales (report.html, canonical_works.bib,
+    audit_log.md, report.json) a partir del JSON que exporta el widget.
+
+    Conecta el flujo human-in-the-loop del navegador con el motor de reportes:
+    el widget identifica autor, confirma obras y clasifica Cita A/B; este
+    comando convierte ese resultado en el documento de respaldo del expediente.
+    """
+    from app.services.from_widget import generate_from_widget_json
+
+    setup_logging()
+    if not json_file.exists():
+        console.print(f"[red]No existe el archivo: {json_file}[/red]")
+        raise typer.Exit(code=1)
+
+    out_dir = out / json_file.stem
+    artifacts = generate_from_widget_json(json_file, out_dir)
+    console.print(f"[bold green]Artefactos generados desde {json_file.name}:[/bold green]")
+    for name, path in artifacts.items():
+        console.print(f"  • {name} → {path}")
+
+
 if __name__ == "__main__":
     app()
