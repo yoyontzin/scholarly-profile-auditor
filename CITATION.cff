@@ -19,7 +19,7 @@ authors:
     orcid: "https://orcid.org/0000-0002-7739-4779"
 license: MIT
 repository-code: "https://github.com/yoyontzin/scholarly-profile-auditor"
-version: "0.2.0"
+version: "0.3.0"
 date-released: "2026-05-15"
 keywords:
   - bibliometrics

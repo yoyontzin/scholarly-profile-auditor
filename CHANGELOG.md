@@ -3,6 +3,52 @@
 Todos los cambios notables a este proyecto se documentan aquí.
 Formato: [Keep a Changelog](https://keepachangelog.com/), versionado [SemVer](https://semver.org/).
 
+## [0.3.0] — 2026-05-19
+
+### Added
+- **Reporte unificado en el widget.** El Paso 3 ahora muestra, junto al
+  análisis Cita A/B, una tabla de **producción por tipo de producto**
+  (artículos arbitrados y memorias, capítulos, libros, preprints, software,
+  datasets, otros) con sus citas A/B y autocitas agregadas. Integra en el
+  navegador lo que antes solo producía el backend (`app/metrics/snii.py`).
+- **Producción por tipo en el JSON exportado** (`production_by_type`): por
+  categoría, conteo de obras, citas A/B/autocitas y lista de títulos con año
+  y DOI. Documento autocontenido para el expediente SNII.
+- Tema visual de **pizarrón gris tipo Keynote** con matemática de fondo a tiza
+  (diagrama conmutativo, curva elíptica, superficie K3, torre p-ádica, Fermat,
+  grafo dinámico funcional, función Z de Weil, ζ de Euler), distribuida y con
+  rotaciones como un pizarrón real; layout de dos columnas en pantallas anchas.
+- Tipografía manuscrita (Caveat + Patrick Hand), créditos al autor y enlace a
+  la página personal; botón flotante de **nueva búsqueda**; **checkbox maestro**
+  para seleccionar/deseleccionar todas las obras.
+- Selector de **área SNII** (I–Matemáticas/Física/Astronomía/Tierra, II, III,
+  sin área) con umbrales oficiales por nivel leídos de
+  `config/snii_reference_params.yaml`.
+- Cabecera de identidad del autor en el reporte: ORCID, OpenAlex, Semantic
+  Scholar, Scopus, página web, afiliaciones, país y keywords.
+- Ordenamiento de obras candidatas de **más a menos probable** con score
+  ponderado por confiabilidad de fuente (ORCID > OpenAlex/SS > arXiv/Crossref)
+  y etiquetas legibles (declarada en ORCID / muy probable / probable / revisar).
+- CI de GitHub Actions (`.github/workflows/ci.yml`): tests en Python 3.11/3.12
+  y validación de sintaxis del widget.
+
+### Fixed
+- **Cita A ya no es igual a Cita B por defecto.** El cálculo dependía de
+  detectar a los coautores del trabajo en los citantes, pero esa lista nunca
+  se poblaba (las obras de ORCID no la traen). Ahora se obtiene la identidad
+  completa de los coautores desde OpenAlex (nombres + ORCIDs) antes de
+  clasificar, tanto en el widget como en el módulo Python.
+- **Regla "evaluado en citante ⇒ overlap con A(W)"** añadida en el backend
+  (`_classify_citer`), en paridad con el widget: una autocita nunca se cuenta
+  como Cita A aunque el nombre no matchee A(W) por variantes.
+- **Normalización de nombres** ahora elimina también el apóstrofe recto ASCII
+  (`'`) además de los tipográficos, agudo y grave; corrige autocitas mal
+  clasificadas como Cita B cuando la fuente serializa "P'erez-Buend'ia".
+- **Matching robusto por inicial+apellido** ("J. R." ↔ "J. Rogelio").
+- `widget/index.html` ahora redirige a `standalone.html` (antes abría el
+  widget que requería backend y fallaba con `file://`).
+- `.gitignore` ignora `.DS_Store`.
+
 ## [0.2.0] — 2026-05-15
 
 ### Added

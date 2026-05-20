@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scholarly-profile-auditor"
-version = "0.2.0"
+version = "0.3.0"
 description = "Auditoría bibliográfica reproducible con identidad autoral verificada y widget HTML embebible."
 readme = "README.md"
 requires-python = ">=3.11"

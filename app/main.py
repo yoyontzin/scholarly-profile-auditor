@@ -15,7 +15,7 @@ setup_logging()
 
 app = FastAPI(
     title="scholarly-profile-auditor",
-    version="0.2.0",
+    version="0.3.0",
     description="Auditoría bibliográfica reproducible con identidad autoral verificada.",
 )
 

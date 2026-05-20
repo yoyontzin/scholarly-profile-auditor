@@ -98,7 +98,7 @@ cases Unicode LaTeX y la regla "evaluado en citante ⇒ overlap").
 MIT. Si lo usas en investigación, cita usando [CITATION.cff](CITATION.cff):
 
 > Pérez-Buendía, R. (2026). *Scholarly Profile Auditor: bibliographic audit
-> with SNII Cita A/B classification* (Version 0.2.0) [Software]. Zenodo.
+> with SNII Cita A/B classification* (Version 0.3.0) [Software]. Zenodo.
 > https://doi.org/10.5281/zenodo.PLACEHOLDER
 
 ## Limitaciones honestas
