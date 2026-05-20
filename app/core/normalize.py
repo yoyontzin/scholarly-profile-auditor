@@ -120,7 +120,12 @@ def validate_orcid_checksum(orcid: str) -> bool:
 # Nombres de autor
 # ---------------------------------------------------------------------------
 
-_LATEX_APOSTROPHES = re.compile(r"[‘’‚ʼʼ]")  # U+2018 U+2019 U+201A U+02BC
+# Apóstrofes y acentos que algunas fuentes (Semantic Scholar, exports LaTeX)
+# insertan al serializar acentos: recto ASCII ('), tipográficos (‘ ’ ‚),
+# modificador (ʼ), agudo (´) y grave (`).
+_LATEX_APOSTROPHES = re.compile(
+    "[" + "'‘’‚ʼ´`" + "]"
+)
 
 
 def normalize_person_name(name: str) -> str:

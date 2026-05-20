@@ -561,7 +561,9 @@ function esc(s) {
 }
 function normalizeName(s) {
   if (!s) return "";
-  return s.replace(/[‘’‚ʼ']/g,"")
+  // Quita apóstrofes/acentos serializados (recto ASCII, tipográficos, agudo, grave),
+  // en paridad con app/core/normalize.py del backend.
+  return s.replace(/['‘’‚ʼ´`]/g,"")
           .normalize("NFD").replace(/[̀-ͯ]/g,"")
           .toLowerCase().replace(/[.,]/g," ")
           .replace(/\s+/g," ").trim();
@@ -574,6 +576,30 @@ function normalizeDoi(s) {
   }
   d = d.trim().toLowerCase();
   return d.startsWith("10.") ? d : null;
+}
+
+// Clasifica el tipo de producto en las categorías SNII (mismas que el backend
+// app/metrics/snii.py): artículos arbitrados, capítulos, libros, preprints,
+// software, datasets, otros.
+const PRODUCT_CATEGORIES = [
+  ["arbitrados",  "Artículos arbitrados y memorias"],
+  ["capitulos",   "Capítulos de libro"],
+  ["libros",      "Libros / libros editados"],
+  ["preprints",   "Preprints"],
+  ["software",    "Software"],
+  ["datasets",    "Datasets"],
+  ["otros",       "Otros"],
+];
+function classifyProductType(rawType) {
+  const t = (rawType || "").toLowerCase();
+  if (["journal-article","article","article-journal","proceedings-article",
+       "conference-paper","paper-conference"].includes(t)) return "arbitrados";
+  if (["book-chapter","chapter","incollection"].includes(t)) return "capitulos";
+  if (["book","edited-book","monograph"].includes(t)) return "libros";
+  if (["preprint","posted-content","manuscript","unpublished","working-paper"].includes(t)) return "preprints";
+  if (["software"].includes(t)) return "software";
+  if (["dataset"].includes(t)) return "datasets";
+  return "otros";
 }
 function validateOrcidChecksum(orcid) {
   const digits = (orcid||"").replace(/-/g,"");
@@ -907,7 +933,7 @@ async function fetchArxivByAuthor(authorName, max=100) {
       const idLink = e.getElementsByTagName("id")[0]?.textContent || "";
       const arxivIdMatch = idLink.match(/arxiv\.org\/abs\/(.+)$/);
       const arxiv_id = arxivIdMatch ? arxivIdMatch[1].replace(/v\d+$/, "") : null;
-      return { title, year, arxiv_id, doi: null, authors, source: "arxiv" };
+      return { title, year, arxiv_id, doi: null, authors, type: "preprint", source: "arxiv" };
     });
   } catch (e) { console.warn("arXiv:", e); return []; }
 }
@@ -1174,6 +1200,8 @@ async function step2FetchAllWorks(author) {
       if (!byKey[k].arxiv_id && w.arxiv_id) byKey[k].arxiv_id = w.arxiv_id;
       if (!byKey[k].openalex_id && w.openalex_id) byKey[k].openalex_id = w.openalex_id;
       if (!byKey[k].year && w.year) byKey[k].year = w.year;
+      // Tipo de producto: preferir el más específico (no "other"/vacío).
+      if ((!byKey[k].type || byKey[k].type === "other") && w.type) byKey[k].type = w.type;
       if (!byKey[k].authorships && w.authorships) byKey[k].authorships = w.authorships;
       if (!byKey[k].authors && w.authors) byKey[k].authors = w.authors;
     }
@@ -1417,6 +1445,7 @@ async function step3RunAnalysis(author, selectedWorks) {
     perWork.push({
       title: w.title, year: w.year, doi: w.doi,
       openalex_id: w.openalex_id,
+      type: w.type, category: classifyProductType(w.type),
       work_authors: workAuthors.display,
       total: citers.length, cita_A: A, cita_B: B, autocita: auto,
       B_minus_A: B - A, detalle,
@@ -1434,8 +1463,25 @@ async function step3RunAnalysis(author, selectedWorks) {
   }), { A:0, B:0, auto:0, BmA:0, total:0 });
   upd("summary","done");
   const area = SNII_AREAS[STATE.area] || SNII_AREAS.none;
+
+  // Producción por tipo de producto (clasificación SNII) para el expediente.
+  const production_by_type = {};
+  for (const [k, label] of PRODUCT_CATEGORIES) {
+    const ws = perWork.filter(w => (w.category || classifyProductType(w.type)) === k);
+    if (!ws.length) continue;
+    production_by_type[k] = {
+      label,
+      obras: ws.length,
+      cita_A: ws.reduce((s,w)=>s+w.cita_A,0),
+      cita_B: ws.reduce((s,w)=>s+w.cita_B,0),
+      autocitas: ws.reduce((s,w)=>s+w.autocita,0),
+      titulos: ws.map(w => ({ title: w.title, year: w.year, doi: w.doi })),
+    };
+  }
+
   return {
     author, works: perWork, totals,
+    production_by_type,
     snii_area: { id: STATE.area, label: area.label, thresholds: {
       nivel_ii: area.nivel_ii, nivel_iii: area.nivel_iii,
       h_ii: area.h_ii, h_iii: area.h_iii, count_basis: area.count_basis,
@@ -1443,6 +1489,7 @@ async function step3RunAnalysis(author, selectedWorks) {
     definiciones: {
       cita_A: "A(C) ∩ A(W) = ∅ — citante sin ningún autor del trabajo citado",
       cita_B: "E ∉ A(C) — citante sin el investigador evaluado",
+      producto_arbitrado: "journal-article / proceedings-article (clasificación SNII)",
     },
     generated_at: new Date().toISOString(),
   };
@@ -1458,6 +1505,36 @@ function renderCitationResults(data) {
     $("#results").insertBefore(authorCard, $("#results").firstChild);
   }
   authorCard.innerHTML = buildAuthorCardHtml(data.author || STATE.candidateAuthor || {});
+
+  // ---- Producción por tipo de producto (clasificación SNII) ----
+  let prodBlock = $("#production-block");
+  if (!prodBlock) {
+    prodBlock = document.createElement("div");
+    prodBlock.id = "production-block";
+    authorCard.insertAdjacentElement("afterend", prodBlock);
+  }
+  const byCat = {};
+  PRODUCT_CATEGORIES.forEach(([k]) => byCat[k] = []);
+  for (const w of data.works) {
+    const cat = w.category || classifyProductType(w.type);
+    (byCat[cat] || byCat.otros).push(w);
+  }
+  const totalCit = data.totals.A + data.totals.BmA + data.totals.auto;
+  let prodHtml = `<h3>Producción por tipo de producto</h3>
+    <table><thead><tr><th>Tipo</th><th>Obras</th><th>Citas A</th><th>Citas B</th><th>Autocitas</th></tr></thead><tbody>`;
+  for (const [k, label] of PRODUCT_CATEGORIES) {
+    const ws = byCat[k];
+    if (!ws.length) continue;
+    const a = ws.reduce((s,w)=>s+w.cita_A,0);
+    const b = ws.reduce((s,w)=>s+w.cita_B,0);
+    const au = ws.reduce((s,w)=>s+w.autocita,0);
+    prodHtml += `<tr><td>${label}</td><td>${ws.length}</td><td>${a}</td><td>${b}</td><td>${au}</td></tr>`;
+  }
+  prodHtml += `<tr style="font-weight:bold; border-top:2px solid var(--yellow)">
+    <td>TOTAL</td><td>${data.works.length}</td><td>${data.totals.A}</td><td>${data.totals.B}</td><td>${data.totals.auto}</td></tr>`;
+  prodHtml += `</tbody></table>`;
+  prodBlock.innerHTML = prodHtml;
+
   $("#ab-stats").innerHTML = `
     <div class="stat A"><div class="label">Cita A</div><div class="value">${data.totals.A}</div></div>
     <div class="stat B"><div class="label">Cita B</div><div class="value">${data.totals.B}</div></div>

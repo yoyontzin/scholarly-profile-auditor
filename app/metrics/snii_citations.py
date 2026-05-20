@@ -157,8 +157,14 @@ def _classify_citer(
         or bool(set(cit_names_norm) & author_name_variants_norm)
     )
 
-    # A(C) ∩ A(W) por nombre normalizado (los ORCIDs no siempre están en W)
-    overlap_with_work = bool(set(cit_names_norm) & work_author_names_norm)
+    # A(C) ∩ A(W): por nombre normalizado, MÁS la regla dura "el evaluado
+    # siempre es autor de W" (porque W es trabajo del evaluado). Por tanto, si
+    # el evaluado firma el citante, A(C) ∩ A(W) ≠ ∅ aunque el nombre no
+    # matchee A(W) por variantes (p. ej. "J. R." vs "J. Rogelio").
+    overlap_with_work = (
+        bool(set(cit_names_norm) & work_author_names_norm)
+        or is_evaluado_en_citante
+    )
 
     is_A = not overlap_with_work               # intersección vacía
     is_B = not is_evaluado_en_citante
